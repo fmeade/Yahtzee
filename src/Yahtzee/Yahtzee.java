@@ -55,7 +55,7 @@ public class Yahtzee extends JFrame {
         dicePanel.setLayout(new GridLayout(1, 5));
         dicePanel.setBackground(getBackground());
         for (int i = 0; i < numDie; i++) {
-            dice[i] = new YahtzeeDie(true);
+            dice[i] = new YahtzeeDie(false);
             dicePanel.add(dice[i]);
         }
         add(dicePanel, BorderLayout.NORTH);
