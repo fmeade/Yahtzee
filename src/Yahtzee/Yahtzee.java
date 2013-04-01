@@ -130,12 +130,12 @@ public class Yahtzee extends JFrame {
     }
 
     /**
+     * Creates a button
      * 
-     * 
-     * @param name
-     * @param back
-     * @param edit
-     * @return 
+     * @param name name of the button
+     * @param back panel to add button to
+     * @param edit if able to edit button
+     * @return returns the button created
      */
     public JButton makeButton(String name, JPanel back, boolean edit) {
         JButton jb = new JButton(name);
@@ -147,10 +147,10 @@ public class Yahtzee extends JFrame {
     }
 
     /**
+     * Creates a text field
      * 
-     * 
-     * @param back
-     * @return 
+     * @param back panel to place field
+     * @return returns the field created
      */
     public JTextField makeField(JPanel back) {
         JTextField tf = new JTextField();
@@ -211,10 +211,10 @@ public class Yahtzee extends JFrame {
     }
  
     /**
+     * Method to pick the type pattern the user is going for
      * 
-     * 
-     * @param arrayPos
-     * @param click 
+     * @param arrayPos position in the array for the score
+     * @param click if user clicked that button
      */
     public void pickType(int arrayPos, boolean click) {
         if (arrayPos < 6) {
@@ -245,10 +245,10 @@ public class Yahtzee extends JFrame {
     }
 
     /**
+     * adds the face of the die to score
      * 
-     * 
-     * @param face
-     * @param click 
+     * @param face face of the die displayed
+     * @param click if user clicked that button
      */
     public void scoreNum(int face, boolean click) {
         int score = 0;
@@ -262,11 +262,11 @@ public class Yahtzee extends JFrame {
     }
 
     /**
+     * Method for the score of a 3 or 4 of a kind
      * 
-     * 
-     * @param face
-     * @param arrayPos
-     * @param click 
+     * @param face face of the die
+     * @param arrayPos position of the score array
+     * @param click if user clicked that button
      */
     public void ofAKind(int face, int arrayPos, boolean click) {
         int score = 0;
@@ -287,10 +287,10 @@ public class Yahtzee extends JFrame {
     }
 
     /**
+     * Method for the score of a full house
      * 
-     * 
-     * @param arrayPos
-     * @param click 
+     * @param arrayPos position of the score array
+     * @param click if user clicked that button
      */
     public void fullHouse(int arrayPos, boolean click) {
         int score = 0;
@@ -313,10 +313,10 @@ public class Yahtzee extends JFrame {
     }
 
     /**
+     * Sets the score based on if the dice are a straight
      * 
-     * 
-     * @param arrayPos
-     * @param click 
+     * @param arrayPos position of this field in the array
+     * @param click if user clicked that button
      */
     public void straight(int arrayPos, boolean click) {
         int score = 0;
@@ -349,10 +349,10 @@ public class Yahtzee extends JFrame {
     }
 
     /**
+     * Method for the score if the user got yahtzee
      * 
-     * 
-     * @param arrayPos
-     * @param click 
+     * @param arrayPos position of this field in the array
+     * @param click if user clicked that button
      */
     public void yahtzee(int arrayPos, boolean click) {
         int score = 0;
@@ -372,9 +372,9 @@ public class Yahtzee extends JFrame {
     }
 
     /**
+     * Method for the score for chance
      * 
-     * 
-     * @return 
+     * @return total of all the die
      */
     public int countAllDie() {
         int score = 0;
@@ -385,12 +385,12 @@ public class Yahtzee extends JFrame {
     }
 
     /**
+     * Method that displays the score in the correct text field
      * 
-     * 
-     * @param pos
-     * @param score
-     * @param click
-     * @param leftSide 
+     * @param pos position in the score array
+     * @param score the score for the turn
+     * @param click if the button was clicked
+     * @param leftSide if the score is on the left side of the scoreboard
      */
     public void displayAnswer(int pos, int score, boolean click, boolean leftSide) {
         if (click) {
@@ -413,7 +413,7 @@ public class Yahtzee extends JFrame {
     }
 
     /**
-     * 
+     * Metho that counts the occurrence of each die
      */
     public void diceOccurence() {
         //Find out how many of each die there are on screen
@@ -427,11 +427,11 @@ public class Yahtzee extends JFrame {
     }
 
     /**
-     * 
+     * Method that resets the row of dice
      */
     public void resetDice() {
         for (int i = 0; i < numDie; i++) {
-            dice[i].keep = true;
+            dice[i].keep = false;
             dice[i].face = 0;
             players[whoseTurn].rollCount = 3;
             rolledTimes.setText("Rolls Remaining: " + players[whoseTurn].rollCount);
@@ -481,7 +481,7 @@ public class Yahtzee extends JFrame {
     }
 
     /**
-     * 
+     * Method that switches the possession of the dice
      */
     public void switchPlayers() {
         rollButton.setText("Roll!");
@@ -494,10 +494,10 @@ public class Yahtzee extends JFrame {
     }
 
     /**
+     * Method that determines if the score belongs on the left side of the board
      * 
-     * 
-     * @param _score
-     * @param _leftSide 
+     * @param _score the score
+     * @param _leftSide if on the left side
      */
     public void onTheLeft(int _score, boolean _leftSide) {
         if (_leftSide) {
@@ -518,7 +518,7 @@ public class Yahtzee extends JFrame {
     }
 
     /**
-     * 
+     * Method that prints the score to the appropriate text field
      */
     public void displayScores() {
         for (int i = 0; i < scoreField.length; i++) {
@@ -533,7 +533,7 @@ public class Yahtzee extends JFrame {
     }
 
     /**
-     * 
+     * Method that initializes the game
      */
     public void gameSetup() {
         int numPlayers = Integer.parseInt(JOptionPane.showInputDialog(null,
@@ -553,7 +553,7 @@ public class Yahtzee extends JFrame {
     }
 
     /**
-     * 
+     * Method that resets the game board
      */
     public void resetBoard() {
         for (int y = 0; y < 13; y++) {
@@ -568,9 +568,9 @@ public class Yahtzee extends JFrame {
     }
 
     /**
+     * Method that displays who won
      * 
-     * 
-     * @return 
+     * @return the player with the highest score
      */
     public int whoWon() {
         int maxVal, maxPlayer;
@@ -587,7 +587,7 @@ public class Yahtzee extends JFrame {
     }
 
     /**
-     * 
+     * Method that resets the game
      */
     public void gameReset() {
         players = null;
@@ -595,7 +595,7 @@ public class Yahtzee extends JFrame {
     }
 
     /**
-     * 
+     * Method that sleeps the dice
      */
     static void sleep() {
         long current = System.currentTimeMillis();

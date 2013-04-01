@@ -95,8 +95,8 @@ public class YahtzeeDie extends JButton
             g.fillOval(a,c,10,10);
         }
         if(face==6){
-            g.fillOval(a,b,5,5);
-            g.fillOval(c,b,5,5);
+            g.fillOval(a,b,10,10);
+            g.fillOval(c,b,10,10);
         }
     }
 }
