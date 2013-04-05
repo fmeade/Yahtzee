@@ -175,6 +175,7 @@ public class Yahtzee extends JFrame {
                         if (players[whoseTurn].rollCount == 3) {
                             dice[i].keep = false;
                         }
+                        
                         dice[i].roll();
                         for (int k = 0; k < scoreButton.length; k++) {
                             scoreButton[k].setEnabled(true);
@@ -242,6 +243,17 @@ public class Yahtzee extends JFrame {
             int score = countAllDie();
             displayAnswer(12, score, click, false);
         } // chance
+        else
+        {
+            if(arrayPos < 6)
+            {
+                displayAnswer(arrayPos, 0, click, true);
+            }
+            else if(arrayPos < 13)
+            {
+                displayAnswer(arrayPos, 0, click, false);
+            }
+        }
     }
 
     /**
@@ -383,6 +395,11 @@ public class Yahtzee extends JFrame {
         }
         return score;
     }
+    
+    public void used(int arrayPos,boolean click)
+    {
+        displayAnswer(arrayPos, 0, click, false);
+    }
 
     /**
      * Method that displays the score in the correct text field
@@ -413,7 +430,7 @@ public class Yahtzee extends JFrame {
     }
 
     /**
-     * Metho that counts the occurrence of each die
+     * Method that counts the occurrence of each die
      */
     public void diceOccurence() {
         //Find out how many of each die there are on screen

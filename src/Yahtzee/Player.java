@@ -3,7 +3,8 @@ package Yahtzee;
 
 
 /**
- *
+ * Creates a Player object
+ * 
  * @author forrest_meade
  */
 public class Player 
@@ -31,10 +32,10 @@ public class Player
     boolean[] usedCategory; // If choice has been used
     
     /**
+     * Instantiates the instance variables
      * 
-     * 
-     * @param _name
-     * @param _scoreName 
+     * @param _name players name
+     * @param _scoreName array of score names
      */
     public Player(String _name,String[] _scoreName)
     {
@@ -58,11 +59,11 @@ public class Player
     }
     
     /**
+     * Calculates the Subtotal
      * 
-     * 
-     * @param score
-     * @param turn
-     * @return 
+     * @param score the score
+     * @param turn the turn
+     * @return the total of the subtotal
      */
     public int calculateSubtotal(int score, int turn)
     {
@@ -71,15 +72,16 @@ public class Player
     }
     
     /**
+     * Calculates the grand total
      * 
-     * 
-     * @return 
+     * @return the total of the two subtotals
      */
     public int grandTotal()
     {
-        for(int i=13;i<15;i++)
+        scoreObj[16].value = 0;
+        for(int i=13;i<=15;i++)
         {
-            scoreObj[16].value +=scoreObj[i].value;
+            scoreObj[16].value += scoreObj[i].value;
         }
         return scoreObj[16].value;
     }
