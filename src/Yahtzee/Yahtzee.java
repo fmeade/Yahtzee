@@ -31,9 +31,8 @@ public class Yahtzee extends JFrame {
     private int whoseTurn;
     private final int numDie = 5;
 
-    
     /**
-     * 
+     *
      */
     public Yahtzee() {
         gameSetup();
@@ -94,7 +93,7 @@ public class Yahtzee extends JFrame {
     }
 
     /**
-     * Sets up the scoreboard 
+     * Sets up the scoreboard
      */
     public void buildPanel() {
         column1 = new JPanel();
@@ -131,7 +130,7 @@ public class Yahtzee extends JFrame {
 
     /**
      * Creates a button
-     * 
+     *
      * @param name name of the button
      * @param back panel to add button to
      * @param edit if able to edit button
@@ -148,7 +147,7 @@ public class Yahtzee extends JFrame {
 
     /**
      * Creates a text field
-     * 
+     *
      * @param back panel to place field
      * @return returns the field created
      */
@@ -170,19 +169,29 @@ public class Yahtzee extends JFrame {
             // if you click the roll button and your roll count and turns remaining aren't 0...
             if (e.getSource() == rollButton && players[whoseTurn].rollCount != 0 && players[whoseTurn].turnsRemaining != 0) {
                 if (rollButton.getText().contains("!")) {
+
+                    for (int k = 0; k < scoreButton.length; k++) {
+                        scoreButton[k].setEnabled(false);
+                    }
+
                     // roll every die
                     for (int i = 0; i < numDie; i++) {
                         if (players[whoseTurn].rollCount == 3) {
                             dice[i].keep = false;
+
                         }
-                        
+
                         dice[i].roll();
+
+                    }
+                    // reduce roll count afterwards
+                    players[whoseTurn].rollCount--;
+
+                    if (players[whoseTurn].rollCount < 3) {
                         for (int k = 0; k < scoreButton.length; k++) {
                             scoreButton[k].setEnabled(true);
                         }
                     }
-                    // reduce roll count afterwards
-                    players[whoseTurn].rollCount--;
 
                     // and reprint the new total
                     rolledTimes.setText("Rolls Remaining: " + players[whoseTurn].rollCount);
@@ -197,6 +206,10 @@ public class Yahtzee extends JFrame {
                     repaint();
                 } else {
                     switchPlayers();
+                    
+                    for (int k = 0; k < scoreButton.length; k++) {
+                        scoreButton[k].setEnabled(false);
+                    }
                 }
             }
 
@@ -210,10 +223,10 @@ public class Yahtzee extends JFrame {
             }
         }
     }
- 
+
     /**
      * Method to pick the type pattern the user is going for
-     * 
+     *
      * @param arrayPos position in the array for the score
      * @param click if user clicked that button
      */
@@ -243,14 +256,10 @@ public class Yahtzee extends JFrame {
             int score = countAllDie();
             displayAnswer(12, score, click, false);
         } // chance
-        else
-        {
-            if(arrayPos < 6)
-            {
+        else {
+            if (arrayPos < 6) {
                 displayAnswer(arrayPos, 0, click, true);
-            }
-            else if(arrayPos < 13)
-            {
+            } else if (arrayPos < 13) {
                 displayAnswer(arrayPos, 0, click, false);
             }
         }
@@ -258,7 +267,7 @@ public class Yahtzee extends JFrame {
 
     /**
      * adds the face of the die to score
-     * 
+     *
      * @param face face of the die displayed
      * @param click if user clicked that button
      */
@@ -275,7 +284,7 @@ public class Yahtzee extends JFrame {
 
     /**
      * Method for the score of a 3 or 4 of a kind
-     * 
+     *
      * @param face face of the die
      * @param arrayPos position of the score array
      * @param click if user clicked that button
@@ -300,7 +309,7 @@ public class Yahtzee extends JFrame {
 
     /**
      * Method for the score of a full house
-     * 
+     *
      * @param arrayPos position of the score array
      * @param click if user clicked that button
      */
@@ -326,7 +335,7 @@ public class Yahtzee extends JFrame {
 
     /**
      * Sets the score based on if the dice are a straight
-     * 
+     *
      * @param arrayPos position of this field in the array
      * @param click if user clicked that button
      */
@@ -362,7 +371,7 @@ public class Yahtzee extends JFrame {
 
     /**
      * Method for the score if the user got yahtzee
-     * 
+     *
      * @param arrayPos position of this field in the array
      * @param click if user clicked that button
      */
@@ -385,7 +394,7 @@ public class Yahtzee extends JFrame {
 
     /**
      * Method for the score for chance
-     * 
+     *
      * @return total of all the die
      */
     public int countAllDie() {
@@ -395,15 +404,14 @@ public class Yahtzee extends JFrame {
         }
         return score;
     }
-    
-    public void used(int arrayPos,boolean click)
-    {
+
+    public void used(int arrayPos, boolean click) {
         displayAnswer(arrayPos, 0, click, false);
     }
 
     /**
      * Method that displays the score in the correct text field
-     * 
+     *
      * @param pos position in the score array
      * @param score the score for the turn
      * @param click if the button was clicked
@@ -512,7 +520,7 @@ public class Yahtzee extends JFrame {
 
     /**
      * Method that determines if the score belongs on the left side of the board
-     * 
+     *
      * @param _score the score
      * @param _leftSide if on the left side
      */
@@ -586,7 +594,7 @@ public class Yahtzee extends JFrame {
 
     /**
      * Method that displays who won
-     * 
+     *
      * @return the player with the highest score
      */
     public int whoWon() {
