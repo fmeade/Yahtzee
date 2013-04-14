@@ -3,7 +3,6 @@ package Yahtzee;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.event.*;
 import javax.swing.border.*;
 
 /**
@@ -164,14 +163,24 @@ public class Yahtzee extends JFrame {
      */
     private class ButtonAction implements ActionListener {
 
+        /**
+         * Action for score and roll buttons
+         * 
+         * @param e which action is being used
+         */
+        @Override
         public void actionPerformed(ActionEvent e) {
             //Roll dice button - validate and do!
-            // if you click the roll button and your roll count and turns remaining aren't 0...
+            // if you click the roll button and while your roll count and turns remaining aren't 0...
             if (e.getSource() == rollButton && players[whoseTurn].rollCount != 0 && players[whoseTurn].turnsRemaining != 0) {
                 if (rollButton.getText().contains("!")) {
 
                     for (int k = 0; k < scoreButton.length; k++) {
                         scoreButton[k].setEnabled(false);
+                        
+                        if (players[whoseTurn].scoreObj[k].used) {
+                            scoreButton[k].setEnabled(false);
+                        }
                     }
 
                     // roll every die
@@ -190,7 +199,12 @@ public class Yahtzee extends JFrame {
                     if (players[whoseTurn].rollCount < 3) {
                         for (int k = 0; k < scoreButton.length; k++) {
                             scoreButton[k].setEnabled(true);
+                        
+                            if (players[whoseTurn].scoreObj[k].used) {
+                                scoreButton[k].setEnabled(false);
+                            }
                         }
+                        
                     }
 
                     // and reprint the new total
@@ -257,7 +271,7 @@ public class Yahtzee extends JFrame {
             displayAnswer(12, score, click, false);
         } // chance
         else {
-            if (arrayPos < 6) {
+            if (arrayPos <= 6) {
                 displayAnswer(arrayPos, 0, click, true);
             } else if (arrayPos < 13) {
                 displayAnswer(arrayPos, 0, click, false);
@@ -550,6 +564,11 @@ public class Yahtzee extends JFrame {
             int val = players[whoseTurn].scoreObj[i].value;
             if (val == 0 && i < 13) {
                 scoreField[i].setText(" ");
+                if(players[whoseTurn].scoreObj[i].used)
+                {
+                    scoreField[i].setText(" " + players[whoseTurn].scoreObj[i].value);
+                    scoreField[i].update(getGraphics());
+                }
             } else {
                 scoreField[i].setText(" " + players[whoseTurn].scoreObj[i].value);
                 scoreField[i].update(getGraphics());
@@ -561,20 +580,32 @@ public class Yahtzee extends JFrame {
      * Method that initializes the game
      */
     public void gameSetup() {
+        try{
         int numPlayers = Integer.parseInt(JOptionPane.showInputDialog(null,
                 "How many players?"));
         players = new Player[numPlayers];
+        
 
         for (int i = 0; i < players.length; i++) {
             String name = JOptionPane.showInputDialog(null,
                     "Name of Player" + (i + 1) + ":");
             players[i] = new Player(name, scoreName);
+            
+            if(name == null)
+            {
+                System.exit(0);
+            }
         }
 
         dice = new YahtzeeDie[numDie];
         whoseTurn = 0;
 
         repaint();
+        }
+        catch(NumberFormatException e)
+        {
+                System.exit(0);
+        }
     }
 
     /**
