@@ -723,15 +723,24 @@ public class Yahtzee extends JFrame {
 
     public String highScore(Queue<HighScore> highScore) {
         String result = "";
-        int size = highScoreList.size();
+        int size = highScore.size();
         HighScore score;
         String scoreString;
 
-        Iterator<HighScore> iter = highScoreList.iterator();
-
-        while (iter.hasNext()) {
+        HighScore[] highscore = new HighScore[highScore.size()];
+        
+        Iterator<HighScore> iter1 = highScore.iterator();
+        
+        for (int i = 0; i < highscore.length; i++) {
+            highscore[i] = iter1.next();
+        }
+        
+        Sort(highscore);
+        
+        for(int j=0;j<highscore.length;j++)
+        {
             score = null;
-            score = iter.next();
+            score = highscore[j];
 
             scoreString = score.getName() + " " + score.getScore() + "\n";
 
@@ -748,4 +757,21 @@ public class Yahtzee extends JFrame {
 
         return result;
     }
+  
+    public void Sort(HighScore[] x) {
+        for (int i = 0; i < x.length - 1; i++) {
+            for (int j = i + 1; j < x.length; j++) {
+                int current = x[i].getScore();
+                int next = x[j].getScore();
+                
+                if (current < next) {
+                    //... Exchange elements
+                    HighScore temp = x[j];
+                    x[j] = x[i];
+                    x[i] = temp;
+                }
+            }
+        }
+    }
+    
 }
