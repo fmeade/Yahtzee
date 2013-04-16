@@ -2,6 +2,9 @@ package Yahtzee;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
+import java.util.*;
+import java.util.logging.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
@@ -29,16 +32,17 @@ public class Yahtzee extends JFrame {
     private int playAgain;
     private int whoseTurn;
     private final int numDie = 5;
+    private String winner;
+    private Queue<HighScore> highScoreList = new LinkedList<HighScore>();
 
     /**
      *
      */
-    public Yahtzee() {
+    public Yahtzee() throws Exception {
         gameSetup();
 
         scoreButton = new JButton[scoreName.length];
         scoreField = new JTextField[scoreName.length];
-
 
         /* Begin building the playing board */
         setTitle("Yahtzee");
@@ -165,19 +169,19 @@ public class Yahtzee extends JFrame {
 
         /**
          * Action for score and roll buttons
-         * 
+         *
          * @param e which action is being used
          */
         @Override
         public void actionPerformed(ActionEvent e) {
             //Roll dice button - validate and do!
             // if you click the roll button and while your roll count and turns remaining aren't 0...
-            if (e.getSource() == rollButton && players[whoseTurn].rollCount != 0 && players[whoseTurn].turnsRemaining != 0) {
+            if (e.getSource() == rollButton && players[whoseTurn].rollCount != 0 && players[players.length-1].turnsRemaining != 0) {
                 if (rollButton.getText().contains("!")) {
 
                     for (int k = 0; k < scoreButton.length; k++) {
                         scoreButton[k].setEnabled(false);
-                        
+
                         if (players[whoseTurn].scoreObj[k].used) {
                             scoreButton[k].setEnabled(false);
                         }
@@ -199,12 +203,12 @@ public class Yahtzee extends JFrame {
                     if (players[whoseTurn].rollCount < 3) {
                         for (int k = 0; k < scoreButton.length; k++) {
                             scoreButton[k].setEnabled(true);
-                        
+
                             if (players[whoseTurn].scoreObj[k].used) {
                                 scoreButton[k].setEnabled(false);
                             }
                         }
-                        
+
                     }
 
                     // and reprint the new total
@@ -220,7 +224,7 @@ public class Yahtzee extends JFrame {
                     repaint();
                 } else {
                     switchPlayers();
-                    
+
                     for (int k = 0; k < scoreButton.length; k++) {
                         scoreButton[k].setEnabled(false);
                     }
@@ -232,7 +236,11 @@ public class Yahtzee extends JFrame {
                     pickType(i, true);
                     displayScores();
                     gamePanel.validate();
-                    resetDice();
+                    try {
+                        resetDice();
+                    } catch (Exception ex) {
+                        Logger.getLogger(Yahtzee.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         }
@@ -384,7 +392,7 @@ public class Yahtzee extends JFrame {
     }
 
     /**
-     * Method for the score if the user got yahtzee
+     * Method for the score if the user got Yahtzee
      *
      * @param arrayPos position of this field in the array
      * @param click if user clicked that button
@@ -468,7 +476,7 @@ public class Yahtzee extends JFrame {
     /**
      * Method that resets the row of dice
      */
-    public void resetDice() {
+    public void resetDice() throws Exception {
         for (int i = 0; i < numDie; i++) {
             dice[i].keep = false;
             dice[i].face = 0;
@@ -478,6 +486,7 @@ public class Yahtzee extends JFrame {
         }
 
         players[whoseTurn].turnsRemaining--;
+
         numberOfTurns.setText("Turns Remaining: " + players[whoseTurn].turnsRemaining);
 
         // reset occurrence counter
@@ -486,19 +495,29 @@ public class Yahtzee extends JFrame {
         }
 
         int endgame = 0;
-        for (int i = 0; i < players.length; i++) {
-            if (players[i].turnsRemaining == 0) {
-                endgame++;
-            }
+
+        if (players[players.length - 1].turnsRemaining == 0) {
+            endgame = players.length;
         }
 
+        /* End Game */
         if (endgame == players.length) {
-            int winner = whoWon();
-            whoseTurn = winner;
-            JOptionPane.showMessageDialog(null, players[whoseTurn].name + " is the winner!");
+            int win = whoWon();
+            whoseTurn = win;
+
+            /* High Score */
+            readHighScore("highScore.dat");
+            highScoreList.add(new HighScore(players[whoseTurn].name, players[win].scoreObj[16].value));
+            String highScoreFile = highScore(highScoreList);
+            writeHighScore("highScore.dat", highScoreFile);
+
+            /* Shows Winner */
+            JOptionPane.showMessageDialog(null, players[whoseTurn].name + " is the winner!"
+                    + "\n" + " Score of " + players[win].scoreObj[16].value);
             gamePanel.setBorder(new TitledBorder(players[whoseTurn].name));
             displayScores();
 
+            /* Replay */
             String[] choices = {"Yes", "No"};
             scoreField[scoreField.length - 1].setBackground(getBackground());
             playAgain = JOptionPane.showOptionDialog(null,
@@ -512,11 +531,13 @@ public class Yahtzee extends JFrame {
             }
         }
 
+        /* switches players */
         int next = whoseTurn + 1;
         if (next >= players.length) {
             next = 0;
         }
         rollButton.setText("Next player: " + players[next].name);
+        numberOfTurns.setText("Turns Remaining: " + players[next].turnsRemaining);
     }
 
     /**
@@ -564,8 +585,7 @@ public class Yahtzee extends JFrame {
             int val = players[whoseTurn].scoreObj[i].value;
             if (val == 0 && i < 13) {
                 scoreField[i].setText(" ");
-                if(players[whoseTurn].scoreObj[i].used)
-                {
+                if (players[whoseTurn].scoreObj[i].used) {
                     scoreField[i].setText(" " + players[whoseTurn].scoreObj[i].value);
                     scoreField[i].update(getGraphics());
                 }
@@ -580,31 +600,28 @@ public class Yahtzee extends JFrame {
      * Method that initializes the game
      */
     public void gameSetup() {
-        try{
-        int numPlayers = Integer.parseInt(JOptionPane.showInputDialog(null,
-                "How many players?"));
-        players = new Player[numPlayers];
-        
+        try {
+            int numPlayers = Integer.parseInt(JOptionPane.showInputDialog(null,
+                    "How many players?"));
+            players = new Player[numPlayers];
 
-        for (int i = 0; i < players.length; i++) {
-            String name = JOptionPane.showInputDialog(null,
-                    "Name of Player" + (i + 1) + ":");
-            players[i] = new Player(name, scoreName);
-            
-            if(name == null)
-            {
-                System.exit(0);
+
+            for (int i = 0; i < players.length; i++) {
+                String name = JOptionPane.showInputDialog(null,
+                        "Name of Player" + (i + 1) + ":");
+                players[i] = new Player(name, scoreName);
+
+                if (name == null) {
+                    System.exit(0);
+                }
             }
-        }
 
-        dice = new YahtzeeDie[numDie];
-        whoseTurn = 0;
+            dice = new YahtzeeDie[numDie];
+            whoseTurn = 0;
 
-        repaint();
-        }
-        catch(NumberFormatException e)
-        {
-                System.exit(0);
+            repaint();
+        } catch (NumberFormatException e) {
+            System.exit(0);
         }
     }
 
@@ -660,5 +677,75 @@ public class Yahtzee extends JFrame {
         future *= secondsToDelay;
         while (System.currentTimeMillis() < future) {
         }
+    }
+
+    public Boolean readHighScore(String __file) throws Exception {
+        Boolean _file = false;
+        try {
+            File file = new File(__file);
+            Scanner scan = new Scanner(file);
+
+            while (scan.hasNext()) {
+
+                String name = scan.next();
+                int score = scan.nextInt();
+
+                HighScore result = new HighScore(name, score);
+
+                highScoreList.add(result);
+
+                _file = true;
+            }
+        } catch (IOException e) {
+
+            _file = false;
+            return _file;
+        }
+        return _file;
+    }
+
+    public void writeHighScore(String __file, String fileInfo) {
+        try {
+            String theFile;
+
+            FileWriter _file = new FileWriter(__file);
+            BufferedWriter file = new BufferedWriter(_file);
+
+            theFile = fileInfo;
+
+            file.write(theFile);
+
+            file.close();
+        } catch (IOException e) {
+            System.err.println("Error: " + e.getMessage());
+        }
+    }
+
+    public String highScore(Queue<HighScore> highScore) {
+        String result = "";
+        int size = highScoreList.size();
+        HighScore score;
+        String scoreString;
+
+        Iterator<HighScore> iter = highScoreList.iterator();
+
+        while (iter.hasNext()) {
+            score = null;
+            score = iter.next();
+
+            scoreString = score.getName() + " " + score.getScore() + "\n";
+
+            result += scoreString;
+        }
+
+        return result;
+    }
+
+    public String toString(String win, int who) {
+        String result = "";
+
+        result += win + " " + players[who].scoreObj[16].value;
+
+        return result;
     }
 }
