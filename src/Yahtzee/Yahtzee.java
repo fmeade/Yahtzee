@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.logging.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import sun.audio.*;
 
 /**
  *
@@ -31,10 +32,13 @@ public class Yahtzee extends JFrame {
     private int[] occurrence = {0, 0, 0, 0, 0, 0};
     private int playAgain;
     private int whoseTurn;
+    private int topScore;
     private final int numDie = 5;
     private String winner;
     private Queue<HighScore> highScoreList = new LinkedList<HighScore>();
 
+    private Music music = new Music();
+    
     /**
      *
      */
@@ -93,6 +97,7 @@ public class Yahtzee extends JFrame {
         add(rollPanel, BorderLayout.SOUTH);
 
         setVisible(true);
+        music.music1();
     }
 
     /**
@@ -502,6 +507,8 @@ public class Yahtzee extends JFrame {
 
         /* End Game */
         if (endgame == players.length) {
+            music.stopped1();
+            music.music1();
             int win = whoWon();
             whoseTurn = win;
 
@@ -511,12 +518,20 @@ public class Yahtzee extends JFrame {
             String highScoreFile = highScore(highScoreList);
             writeHighScore("highScore.dat", highScoreFile);
 
+            music.music2();
             /* Shows Winner */
-            JOptionPane.showMessageDialog(null, players[whoseTurn].name + " is the winner!"
-                    + "\n" + " Score of " + players[win].scoreObj[16].value);
+            if (players[win].scoreObj[16].value > topScore ) {
+                JOptionPane.showMessageDialog(null, players[whoseTurn].name + " is the winner!"
+                        + "\n" + " Score of " + players[win].scoreObj[16].value + "\n" + "New High Score!");
+            } else {
+                JOptionPane.showMessageDialog(null, players[whoseTurn].name + " is the winner!"
+                        + "\n" + " Score of " + players[win].scoreObj[16].value);
+            }
             gamePanel.setBorder(new TitledBorder(players[whoseTurn].name));
             displayScores();
-
+            
+            music.stopped2();
+            music.music2();
             /* Replay */
             String[] choices = {"Yes", "No"};
             scoreField[scoreField.length - 1].setBackground(getBackground());
@@ -746,6 +761,8 @@ public class Yahtzee extends JFrame {
 
             result += scoreString;
         }
+        
+        topScore = highscore[0].getScore();
 
         return result;
     }
