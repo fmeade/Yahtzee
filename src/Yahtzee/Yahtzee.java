@@ -47,7 +47,7 @@ public class Yahtzee extends JFrame {
 
         scoreButton = new JButton[scoreName.length];
         scoreField = new JTextField[scoreName.length];
-
+        
         /* Begin building the playing board */
         setTitle("Yahtzee");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -98,6 +98,8 @@ public class Yahtzee extends JFrame {
 
         setVisible(true);
         music.music1();
+        music.stopped2();
+        music.music2();
     }
 
     /**
@@ -134,6 +136,21 @@ public class Yahtzee extends JFrame {
 
             }
         }
+    }
+    
+    public void buildDicePanel()
+    {
+        
+    }
+    
+    public void buildGamePanel()
+    {
+        
+    }
+    
+    public void buildRollPanel()
+    {
+        
     }
 
     /**
@@ -196,7 +213,6 @@ public class Yahtzee extends JFrame {
                     for (int i = 0; i < numDie; i++) {
                         if (players[whoseTurn].rollCount == 3) {
                             dice[i].keep = false;
-
                         }
 
                         dice[i].roll();
@@ -680,6 +696,20 @@ public class Yahtzee extends JFrame {
     public void gameReset() {
         players = null;
         gameSetup();
+        
+        for (int i = 0; i < numDie; i++) {
+            dice[i] = null;
+            dicePanel = null;
+        }
+        
+        dicePanel = new JPanel();
+        dicePanel.setLayout(new GridLayout(1, 5));
+        dicePanel.setBackground(getBackground());
+        
+        for (int i = 0; i < numDie; i++) {
+            dice[i] = new YahtzeeDie(false);
+            dicePanel.add(dice[i]);
+        }
     }
 
     /**
