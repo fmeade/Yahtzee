@@ -11,10 +11,12 @@ import javax.swing.border.*;
 import sun.audio.*;
 
 /**
+ * Creates a Yahtzee board Does all calculation for the game physics
  *
  * @author forrest_meade
  */
 public class Yahtzee {
+    /* Instance variables for game board */
 
     private JFrame mainFrame;
     private JPanel dicePanel, rollPanel, gamePanel;
@@ -25,6 +27,7 @@ public class Yahtzee {
     private JButton scoreButton[];
     private JTextField scoreField[];
     private JLabel blank;
+    /* Instance variables for the game physics */
     private YahtzeeDie[] dice;
     private Player[] players;
     private final String[] scoreName = {"Aces", "Twos", "Threes", "Fours", "Fives", "Sixes",
@@ -37,29 +40,34 @@ public class Yahtzee {
     private int topScore;
     private final int numDie = 5;
     private String winner;
+    /* Instance Variables for high score */
     private Queue<HighScore> highScoreList;
     private HighScore[] highscore;
 
+    /* Instance Variable for music */
     private Music music = new Music();
-    
+
     /**
-     *
+     * Calls the build method
      */
-    public Yahtzee() throws Exception 
-    {
+    public Yahtzee() throws Exception {
         build();
     }
 
-    public void build() throws Exception
-    {
+    /**
+     * Builds the game board
+     *
+     * @throws Exception from Iterator
+     */
+    public void build() throws Exception {
         mainFrame = new JFrame();
-        
+
         gameSetup();
-        
+
         /* Begin building the playing board */
         scoreButton = new JButton[scoreName.length];
         scoreField = new JTextField[scoreName.length];
-                
+
         mainFrame.setTitle("Yahtzee");
         mainFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
         mainFrame.setLayout(new BorderLayout());
@@ -94,7 +102,7 @@ public class Yahtzee {
         rollPanel.setPreferredSize(new Dimension(500, 50));
 
         rollButton = new JButton("Roll!");
-        rollButton.addActionListener(new ButtonAction());
+        rollButton.addActionListener(new Yahtzee.ButtonAction());
         rollPanel.add(rollButton);
 
         rolledTimes = new JButton("Rolls Remaining: " + players[whoseTurn].rollCount);
@@ -104,16 +112,16 @@ public class Yahtzee {
         numberOfTurns = new JButton("Turns Remaining: " + players[whoseTurn].turnsRemaining);
         numberOfTurns.setEnabled(false);
         rollPanel.add(numberOfTurns);
-        
+
         mainFrame.add(rollPanel, BorderLayout.SOUTH);
 
         mainFrame.setVisible(true);
 
         buildMusic(true);
     }
-    
+
     /**
-     * Sets up the scoreboard
+     * Sets up the panels
      */
     public void buildPanel() {
         column1 = new JPanel();
@@ -146,18 +154,6 @@ public class Yahtzee {
             }
         }
     }
-    
-    public void buildMusic(Boolean x)
-    {
-        if(x == true)
-        {
-            music.music1();
-        }
-        else
-        {
-            music.music2();
-        }
-    }
 
     /**
      * Creates a button
@@ -170,7 +166,7 @@ public class Yahtzee {
     public JButton makeButton(String name, JPanel back, boolean edit) {
         JButton jb = new JButton(name);
         jb.setEnabled(edit);
-        jb.addActionListener(new ButtonAction());
+        jb.addActionListener(new Yahtzee.ButtonAction());
         back.add(jb);
         jb.setEnabled(false);
         return jb;
@@ -191,6 +187,19 @@ public class Yahtzee {
     }
 
     /**
+     * calls the appropriate music method
+     *
+     * @param x true if you want music1, false if you want music2
+     */
+    public void buildMusic(Boolean x) {
+        if (x == true) {
+            music.music1();
+        } else {
+            music.music2();
+        }
+    }
+
+    /**
      * Activates and reads the button input for scoreboard and dice roll
      */
     private class ButtonAction implements ActionListener {
@@ -204,15 +213,12 @@ public class Yahtzee {
         public void actionPerformed(ActionEvent e) {
             //Roll dice button - validate and do!
             // if you click the roll button and while your roll count and turns remaining aren't 0...
-            if (e.getSource() == rollButton && players[whoseTurn].rollCount != 0 && players[players.length-1].turnsRemaining != 0) {
+            if (e.getSource() == rollButton && players[whoseTurn].rollCount != 0 && players[players.length - 1].turnsRemaining != 0) {
                 if (rollButton.getText().contains("!")) {
 
+                    // makes score buttons unenabled
                     for (int k = 0; k < scoreButton.length; k++) {
                         scoreButton[k].setEnabled(false);
-
-                        if (players[whoseTurn].scoreObj[k].used) {
-                            scoreButton[k].setEnabled(false);
-                        }
                     }
 
                     // roll every die
@@ -221,6 +227,7 @@ public class Yahtzee {
                             dice[i].keep = false;
                         }
 
+                        // rolls the 5 dice
                         dice[i].roll();
 
                     }
@@ -231,6 +238,7 @@ public class Yahtzee {
                         for (int k = 0; k < scoreButton.length; k++) {
                             scoreButton[k].setEnabled(true);
 
+                            // makes the buttons unusable if used
                             if (players[whoseTurn].scoreObj[k].used) {
                                 scoreButton[k].setEnabled(false);
                             }
@@ -252,12 +260,14 @@ public class Yahtzee {
                 } else {
                     switchPlayers();
 
+                    // makes all button unusable
                     for (int k = 0; k < scoreButton.length; k++) {
                         scoreButton[k].setEnabled(false);
                     }
                 }
             }
 
+            // sets score for that turn
             for (int i = 0; i < 13; i++) {
                 if (e.getSource() == scoreButton[i] && !players[whoseTurn].scoreObj[i].used) {
                     pickType(i, true);
@@ -454,6 +464,12 @@ public class Yahtzee {
         return score;
     }
 
+    /**
+     * Method for when a choice is used
+     *
+     * @param arrayPos place of choice in the array
+     * @param click if user clicked it
+     */
     public void used(int arrayPos, boolean click) {
         displayAnswer(arrayPos, 0, click, false);
     }
@@ -512,6 +528,7 @@ public class Yahtzee {
             dice[i].repaint();
         }
 
+        // one less turn
         players[whoseTurn].turnsRemaining--;
 
         numberOfTurns.setText("Turns Remaining: " + players[whoseTurn].turnsRemaining);
@@ -538,9 +555,9 @@ public class Yahtzee {
             highScoreList.add(new HighScore(players[whoseTurn].name, players[win].scoreObj[16].value));
             String highScoreFile = highScore(highScoreList);
             writeHighScore("highScore.dat", highScoreFile);
-            
+
             /* Shows Winner */
-            if (players[win].scoreObj[16].value > topScore ) {
+            if (players[win].scoreObj[16].value > topScore) {
                 JOptionPane.showMessageDialog(null, players[whoseTurn].name + " is the winner!"
                         + "\n" + " Score of " + players[win].scoreObj[16].value + "\n" + "New High Score!");
             } else {
@@ -549,8 +566,7 @@ public class Yahtzee {
             }
             gamePanel.setBorder(new TitledBorder(players[whoseTurn].name));
             displayScores();
-            
-            music.stopped2();
+
             music.music2();
             /* Replay */
             String[] choices = {"Yes", "No"};
@@ -634,8 +650,7 @@ public class Yahtzee {
     /**
      * Method that initializes the game
      */
-    public void gameSetup() throws Exception
-    {
+    public void gameSetup() throws Exception {
         try {
             int numPlayers = Integer.parseInt(JOptionPane.showInputDialog(null,
                     "How many players?"));
@@ -646,10 +661,10 @@ public class Yahtzee {
                 String name = JOptionPane.showInputDialog(null,
                         "Name of Player" + (i + 1) + ":");
                 players[i] = new Player(name, scoreName);
-                
+
                 readHighScore("highScore.dat");
                 String highScoreFile = highScore(highScoreList);
-                writeHighScore("highScore.dat",highScoreFile);
+                writeHighScore("highScore.dat", highScoreFile);
                 File highScoreData = new File("highScore.dat");
                 Scanner scan = new Scanner(highScoreData);
                 String highScoreName = scan.next();
@@ -708,25 +723,19 @@ public class Yahtzee {
     /**
      * Method that resets the game
      */
-    public void gameReset() throws Exception
-    {
+    public void gameReset() throws Exception {
         players = null;
         mainFrame = null;
         build();
     }
 
     /**
-     * Method that sleeps the dice
+     * Reads the highScore file
+     *
+     * @param __file name of file being read
+     * @return true if file was read successful
+     * @throws Exception from Iterator
      */
-    static void sleep() {
-        long current = System.currentTimeMillis();
-        int secondsToDelay = 5;
-        long future = current * 1000;
-        future *= secondsToDelay;
-        while (System.currentTimeMillis() < future) {
-        }
-    }
-
     public Boolean readHighScore(String __file) throws Exception {
         Boolean _file = false;
         highScoreList = new LinkedList<HighScore>();
@@ -753,6 +762,12 @@ public class Yahtzee {
         return _file;
     }
 
+    /**
+     * Writes a new highScore file with updated info
+     *
+     * @param __file file name
+     * @param fileInfo file info
+     */
     public void writeHighScore(String __file, String fileInfo) {
         try {
             String theFile;
@@ -770,6 +785,12 @@ public class Yahtzee {
         }
     }
 
+    /**
+     * Reads through the highScore list
+     *
+     * @param highScore list of scores
+     * @return a in order sorted String implementation of the file info
+     */
     public String highScore(Queue<HighScore> highScore) {
         String result = "";
         int size = highScore.size();
@@ -777,17 +798,19 @@ public class Yahtzee {
         String scoreString;
 
         highscore = new HighScore[highScore.size()];
-        
+
         Iterator<HighScore> iter1 = highScore.iterator();
-        
+
+        /* takes the info from the list into the array */
         for (int i = 0; i < highscore.length; i++) {
             highscore[i] = iter1.next();
         }
-        
+
+        // calls sort method
         Sort(highscore);
-        
-        for(int j=0;j<highscore.length;j++)
-        {
+
+        /* Makes the string of info */
+        for (int j = 0; j < highscore.length; j++) {
             score = null;
             score = highscore[j];
 
@@ -795,26 +818,23 @@ public class Yahtzee {
 
             result += scoreString;
         }
-        
+
         topScore = highscore[0].getScore();
 
         return result;
     }
 
-    public String toString(String win, int who) {
-        String result = "";
-
-        result += win + " " + players[who].scoreObj[16].value;
-
-        return result;
-    }
-  
+    /**
+     * Sorts the data in the hoghScore array
+     *
+     * @param x array of scores
+     */
     public void Sort(HighScore[] x) {
         for (int i = 0; i < x.length - 1; i++) {
             for (int j = i + 1; j < x.length; j++) {
                 int current = x[i].getScore();
                 int next = x[j].getScore();
-                
+
                 if (current < next) {
                     //... Exchange elements
                     HighScore temp = x[j];
@@ -824,5 +844,4 @@ public class Yahtzee {
             }
         }
     }
-    
 }

@@ -1,49 +1,49 @@
 package Yahtzee;
 
-import sun.audio.*;
 import java.io.*;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
+import javax.sound.sampled.*;
 
 /**
+ * Creates a Music object
  *
  * @author forrest_meade
  */
-public class Music 
-{
-    boolean play1 = true;
-    boolean play2 = true;
-    
+public class Music {
+
+    /*
+     * Creates a clip for the inGame song
+     * "Jazz Elevator music"
+     */
     public void music1() {
 
         try {
-           
+
             File soundFile = new File("Jazz_Elevator.wav");
             AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
-            
+
             // Get a sound clip resource.
             Clip clip = AudioSystem.getClip();
-            
- 
-            if (play1 == true) {
-                // Open audio clip and load samples from the audio input stream.
-                clip.open(audioIn);
 
-                // Starts the clip
-                clip.start();
 
-                // Loops the clip continuously
-                clip.loop(-1);
-            } else {
-                clip.stop();
-                clip.close();
-            }
+            // Open audio clip and load samples from the audio input stream.
+            clip.open(audioIn);
+
+            // Starts the clip
+            clip.start();
+
+            // Loops the clip continuously
+            clip.loop(-1);
+            clip.stop();
+            clip.close();
 
         } catch (Exception e) {
             System.out.println(e);
         }
     }
+
+    /**
+     * Creates a clip of the winning music "Ode to Joy"
+     */
     public void music2() {
 
         try {
@@ -53,29 +53,16 @@ public class Music
             // Get a sound clip resource.
             Clip clip = AudioSystem.getClip();
 
-            if (play2 == true) {
-                // Open audio clip and load samples from the audio input stream.
-                clip.open(audioIn);
+            // Open audio clip and load samples from the audio input stream.
+            clip.open(audioIn);
 
-                // Starts the clip
-                clip.start();
-            }
-            else {
-                clip.stop();
-                clip.close();
-            }
+            // Starts the clip
+            clip.start();
+            clip.stop();
+            clip.close();
 
         } catch (Exception e) {
             System.out.println(e);
         }
-    }
-    
-    public void stopped1()
-    {
-        play1 = false;
-    }
-    public void stopped2()
-    {
-        play2 = false;
     }
 }
