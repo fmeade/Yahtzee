@@ -6,6 +6,7 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.*;
+import static javax.swing.JFrame.EXIT_ON_CLOSE;
 import javax.swing.border.*;
 import sun.audio.*;
 
@@ -13,8 +14,9 @@ import sun.audio.*;
  *
  * @author forrest_meade
  */
-public class Yahtzee extends JFrame {
+public class Yahtzee {
 
+    private JFrame mainFrame;
     private JPanel dicePanel, rollPanel, gamePanel;
     private JPanel column1, column2;
     private JButton rollButton;
@@ -35,43 +37,52 @@ public class Yahtzee extends JFrame {
     private int topScore;
     private final int numDie = 5;
     private String winner;
-    private Queue<HighScore> highScoreList = new LinkedList<HighScore>();
+    private Queue<HighScore> highScoreList;
+    private HighScore[] highscore;
 
     private Music music = new Music();
     
     /**
      *
      */
-    public Yahtzee() throws Exception {
-        gameSetup();
+    public Yahtzee() throws Exception 
+    {
+        build();
+    }
 
-        scoreButton = new JButton[scoreName.length];
-        scoreField = new JTextField[scoreName.length];
+    public void build() throws Exception
+    {
+        mainFrame = new JFrame();
+        
+        gameSetup();
         
         /* Begin building the playing board */
-        setTitle("Yahtzee");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLayout(new BorderLayout());
-        setBackground(new Color(0, 140, 0));
-        setSize(new Dimension(500, 500));
-        setResizable(false);
+        scoreButton = new JButton[scoreName.length];
+        scoreField = new JTextField[scoreName.length];
+                
+        mainFrame.setTitle("Yahtzee");
+        mainFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        mainFrame.setLayout(new BorderLayout());
+        mainFrame.setBackground(new Color(0, 140, 0));
+        mainFrame.setSize(new Dimension(500, 500));
+        mainFrame.setResizable(false);
 
         /* this panel displays the dice */
         dicePanel = new JPanel();
         dicePanel.setLayout(new GridLayout(1, 5));
-        dicePanel.setBackground(getBackground());
+        dicePanel.setBackground(mainFrame.getBackground());
         for (int i = 0; i < numDie; i++) {
             dice[i] = new YahtzeeDie(false);
             dicePanel.add(dice[i]);
         }
-        add(dicePanel, BorderLayout.NORTH);
+        mainFrame.add(dicePanel, BorderLayout.NORTH);
 
         /* this panel houses the score board */
         gamePanel = new JPanel();
         gamePanel.setLayout(new GridLayout(1, 2));
-        gamePanel.setBackground(getBackground());
+        gamePanel.setBackground(mainFrame.getBackground());
         gamePanel.setBorder(new TitledBorder(players[whoseTurn].name));
-        add(gamePanel, BorderLayout.CENTER);
+        mainFrame.add(gamePanel, BorderLayout.CENTER);
 
         /* build the scoreboard with this method */
         buildPanel();
@@ -79,7 +90,7 @@ public class Yahtzee extends JFrame {
         /* this panel lets the user track their game */
         rollPanel = new JPanel();
         rollPanel.setLayout(new GridLayout(1, 3));
-        rollPanel.setBackground(getBackground());
+        rollPanel.setBackground(mainFrame.getBackground());
         rollPanel.setPreferredSize(new Dimension(500, 50));
 
         rollButton = new JButton("Roll!");
@@ -93,15 +104,14 @@ public class Yahtzee extends JFrame {
         numberOfTurns = new JButton("Turns Remaining: " + players[whoseTurn].turnsRemaining);
         numberOfTurns.setEnabled(false);
         rollPanel.add(numberOfTurns);
+        
+        mainFrame.add(rollPanel, BorderLayout.SOUTH);
 
-        add(rollPanel, BorderLayout.SOUTH);
+        mainFrame.setVisible(true);
 
-        setVisible(true);
-        music.music1();
-        music.stopped2();
-        music.music2();
+        buildMusic(true);
     }
-
+    
     /**
      * Sets up the scoreboard
      */
@@ -133,24 +143,20 @@ public class Yahtzee extends JFrame {
             } else {
                 scoreButton[i] = makeButton(scoreName[i], column2, false);
                 scoreField[i] = makeField(column2);
-
             }
         }
     }
     
-    public void buildDicePanel()
+    public void buildMusic(Boolean x)
     {
-        
-    }
-    
-    public void buildGamePanel()
-    {
-        
-    }
-    
-    public void buildRollPanel()
-    {
-        
+        if(x == true)
+        {
+            music.music1();
+        }
+        else
+        {
+            music.music2();
+        }
     }
 
     /**
@@ -242,7 +248,7 @@ public class Yahtzee extends JFrame {
                             }
                         }
                     }
-                    repaint();
+                    mainFrame.repaint();
                 } else {
                     switchPlayers();
 
@@ -523,8 +529,7 @@ public class Yahtzee extends JFrame {
 
         /* End Game */
         if (endgame == players.length) {
-            music.stopped1();
-            music.music1();
+            buildMusic(false);
             int win = whoWon();
             whoseTurn = win;
 
@@ -533,8 +538,7 @@ public class Yahtzee extends JFrame {
             highScoreList.add(new HighScore(players[whoseTurn].name, players[win].scoreObj[16].value));
             String highScoreFile = highScore(highScoreList);
             writeHighScore("highScore.dat", highScoreFile);
-
-            music.music2();
+            
             /* Shows Winner */
             if (players[win].scoreObj[16].value > topScore ) {
                 JOptionPane.showMessageDialog(null, players[whoseTurn].name + " is the winner!"
@@ -550,7 +554,7 @@ public class Yahtzee extends JFrame {
             music.music2();
             /* Replay */
             String[] choices = {"Yes", "No"};
-            scoreField[scoreField.length - 1].setBackground(getBackground());
+            scoreField[scoreField.length - 1].setBackground(mainFrame.getBackground());
             playAgain = JOptionPane.showOptionDialog(null,
                     "Would you like to play again?", "Reset Game?",
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
@@ -618,11 +622,11 @@ public class Yahtzee extends JFrame {
                 scoreField[i].setText(" ");
                 if (players[whoseTurn].scoreObj[i].used) {
                     scoreField[i].setText(" " + players[whoseTurn].scoreObj[i].value);
-                    scoreField[i].update(getGraphics());
+                    scoreField[i].update(mainFrame.getGraphics());
                 }
             } else {
                 scoreField[i].setText(" " + players[whoseTurn].scoreObj[i].value);
-                scoreField[i].update(getGraphics());
+                scoreField[i].update(mainFrame.getGraphics());
             }
         }
     }
@@ -630,7 +634,8 @@ public class Yahtzee extends JFrame {
     /**
      * Method that initializes the game
      */
-    public void gameSetup() {
+    public void gameSetup() throws Exception
+    {
         try {
             int numPlayers = Integer.parseInt(JOptionPane.showInputDialog(null,
                     "How many players?"));
@@ -641,6 +646,16 @@ public class Yahtzee extends JFrame {
                 String name = JOptionPane.showInputDialog(null,
                         "Name of Player" + (i + 1) + ":");
                 players[i] = new Player(name, scoreName);
+                
+                readHighScore("highScore.dat");
+                String highScoreFile = highScore(highScoreList);
+                writeHighScore("highScore.dat",highScoreFile);
+                File highScoreData = new File("highScore.dat");
+                Scanner scan = new Scanner(highScoreData);
+                String highScoreName = scan.next();
+                int highScore = scan.nextInt();
+                JOptionPane.showMessageDialog(null, "Current High Score"
+                        + "\n" + "Score of " + highScore);
 
                 if (name == null) {
                     System.exit(0);
@@ -650,7 +665,7 @@ public class Yahtzee extends JFrame {
             dice = new YahtzeeDie[numDie];
             whoseTurn = 0;
 
-            repaint();
+            mainFrame.repaint();
         } catch (NumberFormatException e) {
             System.exit(0);
         }
@@ -680,7 +695,7 @@ public class Yahtzee extends JFrame {
         int maxVal, maxPlayer;
         maxVal = players[0].scoreObj[16].value;
         maxPlayer = 0;
-        for (int i = 1; i < players.length; i++) {
+        for (int i = 0; i < players.length; i++) {
             System.out.println(players[i].name + " has score of " + players[i].scoreObj[16].value);
             if (players[i].scoreObj[16].value > maxVal) {
                 maxPlayer = i;
@@ -693,23 +708,11 @@ public class Yahtzee extends JFrame {
     /**
      * Method that resets the game
      */
-    public void gameReset() {
+    public void gameReset() throws Exception
+    {
         players = null;
-        gameSetup();
-        
-        for (int i = 0; i < numDie; i++) {
-            dice[i] = null;
-            dicePanel = null;
-        }
-        
-        dicePanel = new JPanel();
-        dicePanel.setLayout(new GridLayout(1, 5));
-        dicePanel.setBackground(getBackground());
-        
-        for (int i = 0; i < numDie; i++) {
-            dice[i] = new YahtzeeDie(false);
-            dicePanel.add(dice[i]);
-        }
+        mainFrame = null;
+        build();
     }
 
     /**
@@ -726,6 +729,7 @@ public class Yahtzee extends JFrame {
 
     public Boolean readHighScore(String __file) throws Exception {
         Boolean _file = false;
+        highScoreList = new LinkedList<HighScore>();
         try {
             File file = new File(__file);
             Scanner scan = new Scanner(file);
@@ -772,7 +776,7 @@ public class Yahtzee extends JFrame {
         HighScore score;
         String scoreString;
 
-        HighScore[] highscore = new HighScore[highScore.size()];
+        highscore = new HighScore[highScore.size()];
         
         Iterator<HighScore> iter1 = highScore.iterator();
         
