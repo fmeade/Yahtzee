@@ -10,6 +10,12 @@ import javax.sound.sampled.*;
  */
 public class Music {
 
+    protected Clip clip;
+
+    public Music() throws LineUnavailableException {
+        this.clip = AudioSystem.getClip();
+    }
+    
     /*
      * Creates a clip for the inGame song
      * "Jazz Elevator music"
@@ -22,7 +28,7 @@ public class Music {
             AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
 
             // Get a sound clip resource.
-            Clip clip = AudioSystem.getClip();
+            clip = AudioSystem.getClip();
 
 
             // Open audio clip and load samples from the audio input stream.
@@ -33,9 +39,7 @@ public class Music {
 
             // Loops the clip continuously
             clip.loop(-1);
-            clip.stop();
-            clip.close();
-
+            
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -51,15 +55,13 @@ public class Music {
             AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
 
             // Get a sound clip resource.
-            Clip clip = AudioSystem.getClip();
+            clip = AudioSystem.getClip();
 
             // Open audio clip and load samples from the audio input stream.
             clip.open(audioIn);
 
             // Starts the clip
             clip.start();
-            clip.stop();
-            clip.close();
 
         } catch (Exception e) {
             System.out.println(e);

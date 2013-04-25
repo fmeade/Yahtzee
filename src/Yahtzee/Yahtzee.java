@@ -193,8 +193,10 @@ public class Yahtzee {
      */
     public void buildMusic(Boolean x) {
         if (x == true) {
+            music.clip.stop();
             music.music1();
         } else {
+            music.clip.stop();
             music.music2();
         }
     }
@@ -271,6 +273,12 @@ public class Yahtzee {
             for (int i = 0; i < 13; i++) {
                 if (e.getSource() == scoreButton[i] && !players[whoseTurn].scoreObj[i].used) {
                     pickType(i, true);
+                    
+                    // makes all button unusable
+                    for (int k = 0; k < scoreButton.length; k++) {
+                        scoreButton[k].setEnabled(false);
+                    }
+                    
                     displayScores();
                     gamePanel.validate();
                     try {
@@ -567,7 +575,6 @@ public class Yahtzee {
             gamePanel.setBorder(new TitledBorder(players[whoseTurn].name));
             displayScores();
 
-            music.music2();
             /* Replay */
             String[] choices = {"Yes", "No"};
             scoreField[scoreField.length - 1].setBackground(mainFrame.getBackground());
