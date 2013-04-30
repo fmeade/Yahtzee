@@ -24,7 +24,7 @@ public class Music {
 
         try {
 
-            File soundFile = new File("Jazz_Elevator.wav");
+            File soundFile = new File("resources/Jazz_Elevator.wav");
             AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
 
             // Get a sound clip resource.
@@ -51,7 +51,7 @@ public class Music {
     public void music2() {
 
         try {
-            File soundFile = new File("Ode_to_Joy.wav");
+            File soundFile = new File("resources/Ode_to_Joy.wav");
             AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
 
             // Get a sound clip resource.

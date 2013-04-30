@@ -8,7 +8,6 @@ import java.util.logging.*;
 import javax.swing.*;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
 import javax.swing.border.*;
-import sun.audio.*;
 
 /**
  * Creates a Yahtzee board Does all calculation for the game physics
@@ -26,6 +25,7 @@ public class Yahtzee {
     private JButton rolledTimes;
     private JButton scoreButton[];
     private JTextField scoreField[];
+    private JButton ruleButton;
     private JLabel blank;
     /* Instance variables for the game physics */
     private YahtzeeDie[] dice;
@@ -46,6 +46,9 @@ public class Yahtzee {
 
     /* Instance Variable for music */
     private Music music = new Music();
+    
+    private String rules;
+    private int score;
 
     /**
      * Calls the build method
@@ -94,6 +97,8 @@ public class Yahtzee {
 
         /* build the scoreboard with this method */
         buildPanel();
+        
+        ruleButton.setEnabled(true);
 
         /* this panel lets the user track their game */
         rollPanel = new JPanel();
@@ -153,6 +158,7 @@ public class Yahtzee {
                 scoreField[i] = makeField(column2);
             }
         }
+        ruleButton = makeRuleButton("Rules",column1,false);
     }
 
     /**
@@ -169,6 +175,25 @@ public class Yahtzee {
         jb.addActionListener(new Yahtzee.ButtonAction());
         back.add(jb);
         jb.setEnabled(false);
+        return jb;
+    }
+    
+    /**
+     * Creates a button for rules
+     * 
+     * @param name "Rules"
+     * @param back correct column
+     * @param edit not editable
+     * @return the button
+     */
+    public JButton makeRuleButton(String name, JPanel back, boolean edit)
+    {
+        JButton jb = new JButton(name);
+        jb.setEnabled(edit);
+        jb.addActionListener(new Yahtzee.RuleAction());
+        back.add(jb);
+        jb.setEnabled(false);
+        
         return jb;
     }
 
@@ -288,6 +313,61 @@ public class Yahtzee {
                     }
                 }
             }
+        }
+    }
+    
+    /**
+     * Puts a window up with the game rules
+     */
+    private class RuleAction implements ActionListener {
+
+        /**
+         * Action for rule button
+         *
+         * @param e not used
+         */
+        @Override
+        public void actionPerformed(ActionEvent e){
+
+            /* Makes rule string */
+            rules = new String();
+            rules = "Each player:" + "\n"
+                    + "  1. Gets 13 turns" + "\n"
+                    + "  2. 3 rolls a turn" + "\n"
+                    + "  3. Tries to get a score for each slot" + "\n"
+                    + "" + "\n"
+                    + "To Play:" + "\n"
+                    + "  Click the roll button to roll the dice" + "\n"
+                    + "  Click the die to keep or not keep" + "\n"
+                    + "  Click the desired slot you want to put the score" + "\n"
+                    + "" + "\n"
+                    + "Note: Computer adds and places for you" + "\n"
+                    + "Note: Player does not have to wait till third roll to place score" + "\n"
+                    + "" + "\n"
+                    + "Scoring: " + "\n"
+                    + "  Aces: add all 1's" + "\n"
+                    + "  Twos: add all 2's" + "\n"
+                    + "  Threes: add all 3's" + "\n"
+                    + "  Fours: add all 4's" + "\n"
+                    + "  Fives: add all 5's" + "\n"
+                    + "  Sixes: add all 6's" + "\n"
+                    + "  Bonus: above subtotal is above 63, player gets 35 points" + "\n"
+                    + "" + "\n"
+                    + "  3 of a kind: sum of three of one side plus two of any side" + "\n"
+                    + "  4 of a kind: sum of four of one side plus one of any side" + "\n"
+                    + "  Full House: two of one side and three of another side" + "\n"
+                    + "  Small Straight: four consecutive sides, such ass 1-4, 2-5, or 3-6" + "\n"
+                    + "  Large Straight: five consecutive sides, such as 1-5 or 2-6" + "\n"
+                    + "  Yahtzee: five of one side" + "\n"
+                    + "  Chance: sum of all the die" + "\n"
+                    + "" + "\n"
+                    + "To Win: Highest score wins" + "\n"
+                    + "" + "\n"
+                    + "Current High Score" + "\n" 
+                    + "  Score of " + score
+                    + "";
+
+            JOptionPane.showMessageDialog(null, rules, "Rules", -1);
         }
     }
 
@@ -559,7 +639,7 @@ public class Yahtzee {
             whoseTurn = win;
 
             /* High Score */
-            readHighScore("highScore.dat");
+            readHighScore("resources/highScore.dat");
             highScoreList.add(new HighScore(players[whoseTurn].name, players[win].scoreObj[16].value));
             String highScoreFile = highScore(highScoreList);
             writeHighScore("highScore.dat", highScoreFile);
@@ -669,20 +749,20 @@ public class Yahtzee {
                         "Name of Player" + (i + 1) + ":");
                 players[i] = new Player(name, scoreName);
 
-                readHighScore("highScore.dat");
-                String highScoreFile = highScore(highScoreList);
-                writeHighScore("highScore.dat", highScoreFile);
-                File highScoreData = new File("highScore.dat");
-                Scanner scan = new Scanner(highScoreData);
-                String highScoreName = scan.next();
-                int highScore = scan.nextInt();
-                JOptionPane.showMessageDialog(null, "Current High Score"
-                        + "\n" + "Score of " + highScore);
-
                 if (name == null) {
                     System.exit(0);
                 }
             }
+            
+            readHighScore("resources/highScore.dat");
+            String highScoreFile = highScore(highScoreList);
+            writeHighScore("highScore.dat", highScoreFile);
+            File highScoreData = new File("highScore.dat");
+            Scanner scan = new Scanner(highScoreData);
+            String highScoreName = scan.next();
+            score = scan.nextInt();
+            JOptionPane.showMessageDialog(null, "Current High Score"
+                    + "\n" + "Score of " + score);
 
             dice = new YahtzeeDie[numDie];
             whoseTurn = 0;
@@ -718,7 +798,7 @@ public class Yahtzee {
         maxVal = players[0].scoreObj[16].value;
         maxPlayer = 0;
         for (int i = 0; i < players.length; i++) {
-            System.out.println(players[i].name + " has score of " + players[i].scoreObj[16].value);
+            //System.out.println(players[i].name + " has score of " + players[i].scoreObj[16].value);
             if (players[i].scoreObj[16].value > maxVal) {
                 maxPlayer = i;
             }
