@@ -1,5 +1,3 @@
-package Yahtzee;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -639,10 +637,10 @@ public class Yahtzee {
             whoseTurn = win;
 
             /* High Score */
-            readHighScore("resources/highScore.dat");
+            readHighScore("../resources/highScore.dat");
             highScoreList.add(new HighScore(players[whoseTurn].name, players[win].scoreObj[16].value));
             String highScoreFile = highScore(highScoreList);
-            writeHighScore("highScore.dat", highScoreFile);
+            writeHighScore("../resources/highScore.dat", highScoreFile);
 
             /* Shows Winner */
             if (players[win].scoreObj[16].value > topScore) {
@@ -754,7 +752,7 @@ public class Yahtzee {
                 }
             }
             
-            readHighScore("resources/highScore.dat");
+            readHighScore("../resources/highScore.dat");
             String highScoreFile = highScore(highScoreList);
             writeHighScore("highScore.dat", highScoreFile);
             File highScoreData = new File("highScore.dat");

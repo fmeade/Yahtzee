@@ -1,5 +1,3 @@
-package Yahtzee;
-
 import java.io.*;
 import javax.sound.sampled.*;
 

@@ -1,5 +1,3 @@
-package Yahtzee;
-
 /**
  * Creates a Yahtzee object
  * 

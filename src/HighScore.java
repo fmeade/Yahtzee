@@ -1,5 +1,3 @@
-package Yahtzee;
-
 /**
  * Creates a HighScore object with the name and score
  *
