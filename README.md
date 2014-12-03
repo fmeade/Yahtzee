@@ -1,6 +1,6 @@
 Yahtzee
 =======
-Author: fmeade
+Author: Forrest Meade (fmeade)
 
 Description: Yahtzee was developed for project 5 in ITEC 220 with Dr. Chase. 
 
