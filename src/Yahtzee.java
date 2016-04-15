@@ -700,7 +700,7 @@ public class Yahtzee {
             int leftsubTotal = players[whoseTurn].calculateSubtotal(_score, 13);
             scoreField[13].setText(" " + leftsubTotal);
 
-            if (leftsubTotal > 63) {
+            if (leftsubTotal > 62) {
                 players[whoseTurn].scoreObj[14].value = 35;
             }
 
